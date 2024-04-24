@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Questionnaire</string>
+    <string name="text_thanks">Thanks for completing test!</string>
+</resources>
