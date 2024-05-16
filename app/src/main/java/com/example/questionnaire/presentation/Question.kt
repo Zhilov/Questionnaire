@@ -38,8 +38,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.questionnaire.R
 import com.example.questionnaire.data.models.QuestionAnswer
 import com.example.questionnaire.data.models.QuestionTree
+
+
 @Composable
-fun Question(questionViewModel: QuestionViewModel = viewModel()) {
+fun Question(
+    fileText: String,
+    importFileClick: () -> Unit,
+    questionViewModel: QuestionViewModel = viewModel()) {
     val questionUiState by questionViewModel.uiState.collectAsState()
 
     val currentQuestion = questionUiState.currentQuestion
@@ -49,11 +54,12 @@ fun Question(questionViewModel: QuestionViewModel = viewModel()) {
             AppBarTitle(
                 modifier = Modifier.padding(12.dp),
                 onBackClick = { questionViewModel.goToPreviousQuestion() },
+                onUploadFileClick = {importFileClick; questionViewModel.reloadTree(fileText)},
                 isPreviousQuestionExists = questionUiState.isPreviousQuestionExists
             )
             ScreenBody(
                 currentQuestion = currentQuestion,
-                onClick = { questionViewModel.goToNextQuestion(it.questionTree) }
+                onClick = { questionViewModel.goToNextQuestion(it.questionTree!!) }
             )
         }
     }
@@ -63,17 +69,29 @@ fun Question(questionViewModel: QuestionViewModel = viewModel()) {
 fun AppBarTitle(
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit,
+    onUploadFileClick: () -> Unit,
     isPreviousQuestionExists: Boolean
 ) {
     AnimatedVisibility(visible = isPreviousQuestionExists) {
         Row(
-            modifier = modifier.fillMaxWidth()
+            modifier = modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
             IconButton(
                 onClick = onBackClick
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_back),
+                    tint = MaterialTheme.colorScheme.surfaceTint,
+                    contentDescription = "",
+                )
+            }
+
+            IconButton(
+                onClick = onUploadFileClick
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.baseline_file_upload_24),
                     tint = MaterialTheme.colorScheme.surfaceTint,
                     contentDescription = "",
                 )

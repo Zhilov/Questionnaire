@@ -78,3 +78,33 @@ fun treeData(): QuestionTree {
 
     return treeVertex
 }
+
+/*
+void AddPreviousQuestion(QuestionTree previousQuestion, QuestionTree questionTree)
+{
+    questionTree.previousQuestion = previousQuestion;
+    if (questionTree.questionAnswers.Count > 0)
+    {
+        foreach (QuestionAnswer answer in questionTree.questionAnswers)
+        {
+            if (answer.questionTree != null)
+            {
+                AddPreviousQuestion(questionTree, answer.questionTree);
+            }
+        }
+    }
+}
+*/
+
+fun addPreviousQuestion(questionTree: QuestionTree, previousQuestionTree: QuestionTree?){
+    questionTree.previousQuestion = previousQuestionTree;
+    if (questionTree.questionAnswers.count() > 0)
+    {
+        questionTree.questionAnswers.forEach{ answer ->
+            if (answer.questionTree != null)
+            {
+                addPreviousQuestion(questionTree, answer.questionTree!!);
+            }
+        }
+    }
+}

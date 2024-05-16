@@ -1,12 +1,16 @@
 package com.example.questionnaire.data.models
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class QuestionTree(
-    val questionText: String,
-    val questionAnswers: MutableList<QuestionAnswer>,
+    var questionText: String = "",
+    var questionAnswers: MutableList<QuestionAnswer>,
     var previousQuestion: QuestionTree? = null
 )
 
+@Serializable
 data class QuestionAnswer(
-    val answerText: String,
-    val questionTree: QuestionTree
+    var answerText: String,
+    var questionTree: QuestionTree? = null
 )

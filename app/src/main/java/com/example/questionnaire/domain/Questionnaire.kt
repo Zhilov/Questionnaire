@@ -3,6 +3,8 @@ package com.example.questionnaire.domain
 import android.util.Log
 import com.example.questionnaire.data.models.QuestionTree
 import com.example.questionnaire.data.treeData
+import com.example.questionnaire.data.parseJson
+import com.example.questionnaire.data.addPreviousQuestion
 
 object Questionnaire {
 
@@ -26,5 +28,17 @@ object Questionnaire {
 
     fun isPreviousQuestionExists(): Boolean {
         return currentQuestion.previousQuestion != null
+    }
+
+    fun reloadTree(jsonText: String)
+    {
+        var newTree: QuestionTree;
+        Log.d("reloadTree", "Start");
+        newTree = parseJson(jsonText);
+
+        //addPreviousQuestion(newTree, null);
+        Log.d("reloadTree", newTree.questionText);
+        currentQuestion = newTree;
+        previousQuestion = newTree.previousQuestion;
     }
 }
