@@ -1,5 +1,6 @@
 package com.example.questionnaire.data
 
+import android.util.Log
 import com.example.questionnaire.data.models.QuestionAnswer
 import com.example.questionnaire.data.models.QuestionTree
 
@@ -68,7 +69,6 @@ fun treeData(): QuestionTree {
     question1.questionAnswers.add(QuestionAnswer("Ответ 1.3", question13))
     question13.previousQuestion = question1
 
-
     question11.questionAnswers.add(QuestionAnswer("Ответ 1.1.1", question111))
     question111.previousQuestion = question11
     question11.questionAnswers.add(QuestionAnswer("Ответ 1.1.2", question112))
@@ -79,32 +79,17 @@ fun treeData(): QuestionTree {
     return treeVertex
 }
 
-/*
-void AddPreviousQuestion(QuestionTree previousQuestion, QuestionTree questionTree)
-{
-    questionTree.previousQuestion = previousQuestion;
-    if (questionTree.questionAnswers.Count > 0)
-    {
-        foreach (QuestionAnswer answer in questionTree.questionAnswers)
-        {
-            if (answer.questionTree != null)
-            {
-                AddPreviousQuestion(questionTree, answer.questionTree);
+fun addPreviousQuestion(questionTree: QuestionTree, previousQuestionTree: QuestionTree?) {
+    questionTree.previousQuestion = previousQuestionTree
+    Log.d("TAG", questionTree.questionText)
+    if (questionTree.questionAnswers.isNotEmpty()) {
+        Log.d("TAG", questionTree.questionAnswers.count().toString())
+        questionTree.questionAnswers.forEach { answer ->
+            if (answer.questionTree != null) {
+                Log.d("TAG", answer.answerText)
+                addPreviousQuestion(answer.questionTree!!, questionTree)
             }
         }
-    }
-}
-*/
-
-fun addPreviousQuestion(questionTree: QuestionTree, previousQuestionTree: QuestionTree?){
-    questionTree.previousQuestion = previousQuestionTree;
-    if (questionTree.questionAnswers.count() > 0)
-    {
-        questionTree.questionAnswers.forEach{ answer ->
-            if (answer.questionTree != null)
-            {
-                addPreviousQuestion(questionTree, answer.questionTree!!);
-            }
-        }
+        return
     }
 }

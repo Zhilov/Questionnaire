@@ -4,11 +4,20 @@ import android.util.Log
 import com.example.questionnaire.data.models.QuestionTree
 import com.example.questionnaire.data.treeData
 import com.example.questionnaire.data.parseJson
-import com.example.questionnaire.data.addPreviousQuestion
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 
 object Questionnaire {
 
-    var currentQuestion = treeData()
+    private val currentQuestionFlow = MutableStateFlow(treeData())
+
+    var value: QuestionTree
+        get() = currentQuestionFlow.value
+        set(value) {
+            currentQuestionFlow.value = value
+        }
+
+    val stream: Flow<QuestionTree?> = currentQuestionFlow
 
     var previousQuestion: QuestionTree? = null
 
@@ -16,29 +25,28 @@ object Questionnaire {
         questionTree: QuestionTree
     ) {
         Log.d("TAG", "goToNextQuestion ${questionTree.questionText}")
-        previousQuestion = currentQuestion.copy()
-        currentQuestion = questionTree
+        previousQuestion = currentQuestionFlow.value.copy()
+        currentQuestionFlow.value = questionTree
     }
 
     fun goToPreviousQuestion() {
-        currentQuestion.previousQuestion?.let {
-            currentQuestion = it
+        currentQuestionFlow.value.previousQuestion?.let {
+            currentQuestionFlow.value = it
         }
     }
 
     fun isPreviousQuestionExists(): Boolean {
-        return currentQuestion.previousQuestion != null
+        return currentQuestionFlow.value.previousQuestion != null
     }
 
     fun reloadTree(jsonText: String)
     {
-        var newTree: QuestionTree;
-        Log.d("reloadTree", "Start");
-        newTree = parseJson(jsonText);
+        Log.d("reloadTree", "Start")
+        val newTree: QuestionTree = parseJson(jsonText)
 
-        //addPreviousQuestion(newTree, null);
-        Log.d("reloadTree", newTree.questionText);
-        currentQuestion = newTree;
-        previousQuestion = newTree.previousQuestion;
+        //addPreviousQuestion(newTree, null)
+        Log.d("reloadTree", newTree.questionText)
+        currentQuestionFlow.value = newTree
+        previousQuestion = newTree.previousQuestion
     }
 }

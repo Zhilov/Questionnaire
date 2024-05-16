@@ -28,6 +28,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,28 +39,39 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.questionnaire.R
 import com.example.questionnaire.data.models.QuestionAnswer
 import com.example.questionnaire.data.models.QuestionTree
-
+import kotlinx.coroutines.launch
 
 @Composable
 fun Question(
-    fileText: String,
     importFileClick: () -> Unit,
-    questionViewModel: QuestionViewModel = viewModel()) {
+    questionViewModel: QuestionViewModel = viewModel()
+) {
     val questionUiState by questionViewModel.uiState.collectAsState()
 
     val currentQuestion = questionUiState.currentQuestion
 
     InitialFadeIn {
         Column {
+
+            val scope = rememberCoroutineScope()
+
             AppBarTitle(
                 modifier = Modifier.padding(12.dp),
-                onBackClick = { questionViewModel.goToPreviousQuestion() },
-                onUploadFileClick = {importFileClick; questionViewModel.reloadTree(fileText)},
+                onBackClick = {
+                    scope.launch {
+                        questionViewModel.goToPreviousQuestion()
+                    }
+                },
+                onUploadFileClick = importFileClick,
                 isPreviousQuestionExists = questionUiState.isPreviousQuestionExists
             )
             ScreenBody(
                 currentQuestion = currentQuestion,
-                onClick = { questionViewModel.goToNextQuestion(it.questionTree!!) }
+                onClick = {
+                    scope.launch {
+                        questionViewModel.goToNextQuestion(it.questionTree!!)
+                    }
+                }
             )
         }
     }
@@ -200,7 +212,7 @@ fun addAnimation(duration: Int = 500): ContentTransform {
 @Composable
 fun InitialFadeIn(
     durationMs: Int = 500,
-    content: @Composable() AnimatedVisibilityScope.() -> Unit
+    content: @Composable AnimatedVisibilityScope.() -> Unit
 ) {
     var visibility by remember { mutableStateOf(false) }
     LaunchedEffect(key1 = Unit, block = { visibility = true })
